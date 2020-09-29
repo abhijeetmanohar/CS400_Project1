@@ -230,7 +230,15 @@ public class UserInterfaceLD {
     System.out.println("Genre: ");
     String genre = scan.nextLine();
     System.out.println("ISBN Number: ");
-    int ISBNNumber = scan.nextInt();
+    int ISBNNumber = 0;
+    
+    try {
+      ISBNNumber = scan.nextInt();
+    }
+    catch (Exception e) {
+      System.out.println("You entered an invalid option. Please enter a whole number as your ISBN number.");
+      addBook();
+    }
 
 
     if (libraryAccess.addBook(bookTitle, authorName, genre, ISBNNumber)) {
