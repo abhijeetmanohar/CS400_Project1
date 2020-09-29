@@ -1,132 +1,142 @@
 // --== CS400 File Header Information ==--
-// Name: Robert Leone Jr.
-// Email: rdleone@wisc.edu
+// Name: Timothy Eric Doughery
+// Email: doughery@wisc.edu
 // Team: CB
 // TA: Yeping Wang
-// Lecturer: Gary Dahl
-// Notes to Grader:
+// Lecturer: Florian Heimerl
+// Notes to Grader: <none>
 
 /*
-* This class serves as a database that holds Book objects. Books are provided by librarians
-* to add or remove and by students to search for the book in the database.
-*/
+ * @author - Timothy Eric Doughery
+ * This class is a database that contains Book objects by using the HashTableMap class. Librarians
+ * can add or remove books, while students can search for, check out, or check in a book,
+ */
 public class LibraryDB {
-  
-	private HashTableMap<String, Book> db;
-	private Book[] firstBooks;
-  
-  /*
-   * Constructor that creates a library database that functions as a HashTableMap of
-   * initial capacity 20. This also adds 5 predefined books into the database.
-   */
+	HashTableMap<String, Book> foo = null;
+	
+	/**
+	 * Class constructor
+	 * @param none
+	 */
 	public LibraryDB() {
-		db = new HashTableMap<String, Book>(20);
-		Book a = new Book("Frankenstein", "Mary Shelley", "Fiction", 111);
-		Book b = new Book("King Lear", "William Shakespeare", "Drama", 222);
-		Book c = new Book("The Scarlet Letter", "Nathaniel Hawthorne", "Historical Fiction", 333);
-		Book d = new Book("Heart of Darkness", "Joseph Conrad", "Novel", 444);
-		Book e = new Book("To Kill a Mockingbird", "Harper Lee", "Fiction", 555);
-		
-		db.put(a.getTitle(),a);
-    		db.put(b.getTitle(),b);
-    		db.put(c.getTitle(),c);
-    		db.put(d.getTitle(),d);
-    		db.put(e.getTitle(),e);
+		//loads a number of default books to the library
+		foo = new HashTableMap<String, Book>();
+		Book a = new Book("Frankenstein", "Mary Shelley", "Fiction", 111, true);
+		Book b = new Book("King Lear", "William Shakespeare", "Drama", 222, true);
+		Book c = new Book("The Scarlet Letter", "Nathaniel Hawthorne", "Historical Fiction", 333, true);
+		Book d = new Book("Heart of Darkness", "Joseph Conrad", "Novel", 444, true);
+		Book e = new Book("To Kill a Mockingbird", "Harper Lee", "Fiction", 555, true);
+		Book[] bar = {a, b, c, d, e};
+		for (Book i: bar) {
+			foo.put(i.getTitle(), i);
+		}
 	}
-  
-	/*
-	 * Librarian function: Adds a new book to the database given specific details
-	 * about the book
+	
+	/** 
+	 * Adds a book to the library. Only accessible by librarians.
 	 * 
-	 * @param - title of book, author of book, book genre, book ISBN value
+	 * @param {String} key - The books' title.
+	 * @param {String} author - Author of the book.
+	 * @param {String} genre - The book's genre.
+	 * @param {int} isbn - The book's ISBN value.
 	 * 
-	 * @return - true if book was added successfully, otherwise false
+	 * @return a boolean indicating if the book has successfully been added.
 	 */
-	public boolean addBook(String title, String author, String genre, int ISBN) {
-		// use put method to add to the library DB
-		Book book = new Book(title, author, genre, ISBN, true);
-		return db.put(title, book);
+	public boolean addBook(String key, String author, String genre, int isbn) {
+		Book temp = new Book (key, author, genre, isbn, true);
+		return foo.put(key, temp);
 	}
-  
-	/*
-	 * Librarian function: Removes a book from the database given its title
+	
+	/**
+	 * Removes a book from the library. Only accessible by librarians.
 	 * 
-	 * @param - title of book to remove
+	 * @param {String} key - Title of the book to be removed.
 	 * 
-	 * @return - true if book was removed successfully, otherwise false
+	 * @return a boolean indicating if the book has successfully been removed.
 	 */
-	public boolean removeBook(String title) {
-		int checkSize = db.size();
-		// use remove method
-		db.remove(title);
-		if ((checkSize - db.size()) == 1) {
+	public boolean removeBook(String key) {
+		if (foo.remove(key) != null) {
 			return true;
 		}
 		return false;
 	}
-  
-	/*
-	 * Search for a book from the database given its title
+
+	/**
+	 * Gets a Book object from the library.
 	 * 
-	 * @param - title of book to find
+	 * @param {String} key - The book's title.
 	 * 
-	 * @return - Book object corresponding to title
+	 * @return the book if it can be found in the library, null otherwise.
 	 */
-	public Book getBook(String title){
-		return db.get(title);
-	}
-  
-	/*
-	 * Return the current size of the library database
-	 * 
-	 * @param - none
-	 * 
-	 * @return - integer size of database
-	 */
-	public int librarySize(){
-		return db.size();
-	}
-  
-	//boolean method to see if the book is checked out or  not
-	/*
-	 * Student function: Determines if a book is available to check-out
-	 * given its title
-	 * 
-	 * @param - title of book to check
-	 * 
-	 * @return - true if the book is available, otherwise false
-	 */
-	public boolean isBookAvailable(String title){
-		return db.get(title).getCheckedIn();
-	}
-  
-	/*
-	 * Student function: Check out the book from the database
-	 * 
-	 * @param - title of book to check-out
-	 * 
-	 * @return - true if the book was successfully checked-out, otherwise false
-	 */
-	public boolean checkOut(String title) {
-		if(isBookAvailable(title)) {
-			db.get(title).setCheckedIn();
-			return true;
+	public Book getBook(String key) { 
+		Book temp = null;
+		
+		try {
+			temp = foo.get(key);	
+		} catch (Exception e) { //if the book doesn't exist in the library, it can throw an exception.
+			//Nothing is done here, so it doesn't interfere with the UI
 		}
-		else return false;
+		
+		return temp;
 	}
 
-	/*
-	 * Student function: Return a book to the database given its title
+	/**
+	 * Gets the size of the library.
 	 * 
-	 * @param - title of book to return
+	 * @param none.
 	 * 
-	 * @return - true if the book was successfully checked-in, otherwise false
+	 * @return size of the library.
 	 */
-	public boolean checkIn(String title) {
-		if(!isBookAvailable(title)) {
-			db.get(title).setCheckedIn();
-			return true;
+	public int librarySize() {
+		return foo.size();
+	}
+
+	/**
+	 * Checks out a book from the library. Accessible by students.
+	 * 
+	 * @param {String} key - Title of the book to be checked out.
+	 * 
+	 * @return a boolean indicating if the book can be found and checked out.
+	 */
+	public boolean checkOut(String key) {
+		try {
+			if (foo.get(key).getCheckedIn()) { 
+				foo.get(key).setCheckedIn(); 
+				return true; 
+			}
+		} catch (Exception e) {
+			
 		}
-		else return false;
+		return false;
+	}
+	
+	/**
+	 * Checks in a book to the library. Accessible by students.
+	 * 
+	 * @param {String} key - Title of the book to be checked back in.
+	 * 
+	 * @return a boolean indicating if the book can be found and checked in.
+	 */
+	public boolean checkIn(String key) {
+		try {
+			if (!foo.get(key).getCheckedIn()) { 
+				foo.get(key).setCheckedIn(); 
+				return true;
+			}
+		} catch (Exception e) {
+			
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks a book's availability.
+	 * 
+	 * @param {String} key - Title of the book.
+	 * 
+	 * @return a boolean indicating the book's availability.
+	 */
+	public boolean isBookAvailable(String key) {
+		return foo.get(key).getCheckedIn();
 	}
 }
